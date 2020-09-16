@@ -26,3 +26,7 @@ export interface ScreenshotProps {
 export interface ContainerProps {
   readonly backgroundColor?: string;
 }
+
+export interface FigureProps {
+  readonly type?: string;
+}

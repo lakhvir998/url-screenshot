@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled, { ThemeProvider } from "styled-components";
-import { ScreenshotProps, ContainerProps } from "./types";
+import { ScreenshotProps, ContainerProps, FigureProps } from "./types";
 import themes from "./theme";
 
 const Container = styled.div<ContainerProps>`
@@ -10,12 +10,15 @@ min-width:
   background-color: ${(props) => props.backgroundColor};
   border: 1px solid #ddd;
   box-sizing: border-box;
+  overflow: hidden;
 `;
 
-const Figure = styled.figure`
+const Figure = styled.figure<FigureProps>`
   width: 100%;
   box-sizing: border-box;
   margin: 0;
+  transform: ${(props) =>
+    props.type === "LONG" ? "rotate(-50deg)" : "rotate(0deg)"};
 `;
 
 const Image = styled.img`
@@ -32,44 +35,19 @@ const Wizard: React.FC<ScreenshotProps> = ({
   animate = false,
   type = "NONE",
 }) => {
+  // const [showIframe, toggleIframe] = useState(false);
   const theme = dark ? themes.dark : themes.light;
-  const [screenshot, setScreeshot] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-
-  useEffect(() => {
-    setLoading(true);
-    setErrors({});
-    fetch(`https://screenshotapi.net/api/v1/screenshot?url=${url}`)
-      .then((resp) => {
-        return resp.json();
-      })
-      .then((json) => {
-        if (json.errors) {
-          setErrors(json.errors);
-        } else {
-          setScreeshot(json.screenshot);
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        setErrors({ serverError: "Something wnet wrong!" });
-      });
-  }, [url]);
 
   return (
     <ThemeProvider theme={theme}>
-      <Container backgroundColor={color}>
-        {loading ? (
-          <p>Loading screenshot...</p>
-        ) : (
-          <a href={url} title={url} target="_blank">
-            <Figure>
-              <Image src={screenshot} alt={url} />
-            </Figure>
-          </a>
-        )}
+      <Container
+        backgroundColor={color}
+        // onMouseOver={() => toggleIframe(true)}
+        // onMouseLeave={() => toggleIframe(false)}
+      >
+        <Figure type={type}>
+          <Image src={url} alt={url} />
+        </Figure>
       </Container>
     </ThemeProvider>
   );
